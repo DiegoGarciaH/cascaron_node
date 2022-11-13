@@ -1,5 +1,10 @@
+// Importaciones Terceros
 const express = require('express');
 const cors = require('cors');
+
+// Importaciones Propias
+const db  = require('../db/conection')
+
 
 class Server {
     constructor () {
@@ -8,11 +13,24 @@ class Server {
         this.usuariosPath = '/api/usuarios'
 
         // Middlewares
+        this.dbConnection()
         this.middlewares();
 
         // Rutas de mi aplicacion
         this.routes();
     }
+
+    async dbConnection () {
+
+        try {
+
+            await db.authenticate();
+            console.log('Base de Datos online')
+        } catch (error) {
+            throw new Error(error)
+        }
+    }
+
 
     middlewares () {
 
@@ -29,9 +47,9 @@ class Server {
     routes () {
        
 
-        this.app.use(this.usuariosPath, require('../routes/user'))
+        this.app.use(this.usuariosPath, require('../routes/userRoutes'))
     }
-
+  
     listen () {
         this.app.listen(this.port, () => {
             console.log(`Example app listening on port ${ this.port }`);
